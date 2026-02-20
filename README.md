@@ -1,16 +1,20 @@
 # Fraud-Flag Microservice API
 
-A lightweight RESTful backend service built using Flask and SQLite to score and flag potentially fraudulent transactions using rule-based logic.
+A lightweight, test-backed RESTful fraud detection microservice built with Flask and SQLite.
+
+Implements deterministic rule-based risk scoring, velocity-based transaction checks, persistent storage, and automated API testing.
 
 ---
 
 ## 🚀 Features
 
 - RESTful API endpoints
-- Rule-based fraud scoring engine
+- Deterministic rule-based fraud scoring engine
+- Velocity-based transaction risk detection (time-window check)
 - Persistent transaction storage (SQLite)
 - Input validation and structured error handling
-- Velocity-based fraud detection (time-window check)
+- Automated API tests using `pytest`
+- Proper REST-compliant HTTP status codes (200, 201, 400, 404)
 
 ---
 
@@ -22,18 +26,18 @@ Client Request → Flask API → Fraud Scoring Logic → SQLite Database → JSO
 
 ## 📌 API Endpoints
 
-### Health Check
-GET /health
+### Health Check  
+`GET /health`
 
 Response:
 ```json
-{"status":"ok"}
+{"status": "ok"}
 ```
 
 ---
 
-### Create Transaction
-POST /transactions
+### Create Transaction  
+`POST /transactions`
 
 Request:
 ```json
@@ -55,13 +59,13 @@ Response:
 
 ---
 
-### List Transactions
-GET /transactions?limit=10
+### List Transactions  
+`GET /transactions?limit=10`
 
 ---
 
-### Get Transaction by ID
-GET /transactions/<id>
+### Get Transaction by ID  
+`GET /transactions/<id>`
 
 ---
 
@@ -75,6 +79,42 @@ Fraud score is computed using deterministic rules:
 - Score capped at 1.0
 - Flagged if score ≥ 0.7
 
+This rule-based approach ensures transparency and explainability of risk decisions.
+
+---
+
+## ✅ Test Coverage
+
+This project includes automated API tests using `pytest`.
+
+To run tests locally:
+
+```bash
+pytest -q
+```
+
+The test suite validates:
+- Health endpoint availability
+- Input validation and 400 error handling
+- Successful transaction creation (201)
+- Fraud scoring fields returned
+- Transaction retrieval by ID
+- Proper 404 handling
+- Isolated test database configuration
+
+---
+
+## 📂 Project Structure
+
+```
+fraud-flag-microservice/
+├── app.py              # Flask routes and fraud scoring logic
+├── db.py               # Database layer abstraction
+├── tests/              # Pytest test suite
+├── requirements.txt
+└── README.md
+```
+
 ---
 
 ## 🛠 Tech Stack
@@ -82,7 +122,8 @@ Fraud score is computed using deterministic rules:
 - Python
 - Flask
 - SQLite
-- REST API Design
+- Pytest
+- RESTful API design principles
 
 ---
 
@@ -91,7 +132,7 @@ Fraud score is computed using deterministic rules:
 ```bash
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1   # Windows
-pip install flask
+pip install -r requirements.txt
 python app.py
 ```
 
@@ -102,25 +143,40 @@ http://127.0.0.1:5000/health
 
 ## 🧩 Design Decisions
 
-- Separated database logic into `db.py` to improve maintainability.
-- Implemented input validation to prevent malformed payloads.
-- Used rule-based scoring for deterministic and explainable fraud decisions.
-- Designed schema to store both input and computed fraud results.
+- Separated application and database layers (`app.py` and `db.py`) to reduce coupling and improve maintainability.
+- Implemented environment-based database configuration to enable isolated test databases.
+- Applied deterministic rule-based fraud scoring for explainability and reproducibility.
+- Used proper RESTful HTTP status codes (200, 201, 400, 404) for API compliance.
+- Added automated tests with `pytest` to ensure endpoint reliability and prevent regressions.
+
+---
+
+## ⚡ Scalability Considerations
+
+While SQLite is sufficient for lightweight local persistence, production deployment would require:
+
+- PostgreSQL for concurrent write support
+- Connection pooling
+- Indexing on `user_id` and `created_at`
+- Authentication and rate limiting middleware
+- Containerization using Docker
 
 ---
 
 ## 🚧 Future Improvements
 
-- Replace SQLite with PostgreSQL for higher concurrency.
-- Add authentication and rate limiting.
-- Add unit tests and CI pipeline.
-- Containerize using Docker.
+- Replace SQLite with PostgreSQL
+- Add authentication and API key support
+- Implement rate limiting per user
+- Add CI pipeline (GitHub Actions)
+- Containerize using Docker
 
 ---
 
 ## 📖 What I Learned
 
-- Designing RESTful APIs with proper HTTP status codes.
-- Structuring backend logic separately from data access layers.
-- Implementing time-based fraud detection logic.
-- Building and documenting a production-style microservice.
+- Designing and structuring RESTful APIs with proper HTTP status codes
+- Separating business logic from data access layers
+- Implementing deterministic fraud scoring with time-window logic
+- Writing automated API tests with isolated databases
+- Building and documenting a production-style backend microservice
